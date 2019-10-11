@@ -1,0 +1,33 @@
+sudo: required
+addons:
+  apt:
+    packages:
+      - libssl-dev
+      - zlib1g-dev
+      - libreadline-dev
+      - liblzma-dev
+      - libncurses5-dev
+      - libbz2-dev
+      - libgdbm-dev
+env:
+  matrix:
+    - PYTHON_VERSION=3.6.9
+script:
+  - export PYTHON_SHORT="$(echo "$PYTHON_VERSION" | cut -d. -f 1-2)"
+  - export PYTHON_DIR="python$PYTHON_SHORT"
+  - export PYTHON_URL="https://www.python.org/ftp/python/$PYTHON_VERSION/Python-$PYTHON_VERSION.tar.xz"
+  - mkdir "$PYTHON_DIR"
+  - echo "Downloading $PYTHON_URL to $PYTHON_DIR..."
+  - curl -L "$PYTHON_URL" | tar -xJ -C "$PYTHON_DIR" --strip-components=1
+  - cd "$PYTHON_DIR"
+  - ./configure --prefix=/code/"$PYTHON_DIR" --enable-optimizations
+  - make -j"$(nproc)"
+  - sudo make install
+  - tar -C /code -czvf "$(pwd)/$PYTHON_DIR.tar.gz" "$PYTHON_DIR"
+deploy:
+  provider: releases
+  api_key:
+    secure: "JdhL/CA73EC9FZukhPEeuGLCDXABpt9XLgqnQBAoynzadMtKjtiIbGslUQ0+7TvoqDXwkziAcOlzaf6/enikCGncBCNBQtuGsw9l3dTFP49ZyTMTfZB00Zq7N2fvQ6WTP/gzYxerj5lBbAaqi4DN/MnECSvBWHmPr9JqtEUWHOLYrFkDAcapxvquyyensggF9GvVREMoxj7FdiTPzwJ/axWEBupuWCzvD2i+arsnIgALj0Vl5DzAJaJpOGRmGw20HPVD6Wp8nYCH0yxsw7sOtYlCLGRU+JeqxhrLFUQ3Uu/RxTs55BBb3q4AaZNWHeth021xtLLiUNWDANDYxd5HptTXnZlsyqdHDluuLtRjfFG2Y+vj/CAi+gHfx87eVckMYzwTYuZDEO3F9oPrdTGEof+v7PtGWII3X5TYwI/LXHQlEx9F/86Y1Q8r2d+o75DtK8j+xxqFARpmpIp2jx/yNntXSYRKca74VLgoCfduHkbEH6t0BrYGWeNTQ+Y0yNB+TT2d5kiAwXsUINAxO7DDjGAO6HRPaZKgg+Q39zZD5MP/TRoYzggUyyJaaUWujPaKaX4tZdzfjnhUBjHA+VFY7+NX89taCgld6aZISfQCWCh+hleVv4YLQHWtDoqKRf9LjekWpBQM91cI8F9hjwPAwGYLS87bOR8nVWjlBPcq0f8="
+  file_glob: true
+  file: python*.tar.gz
+  skip_cleanup: true
