@@ -6,11 +6,13 @@ services:
 env:
   matrix:
     - PYTHON_VERSION=3.6.9
+    - PYTHON_VERSION=3.7.4
+    - PYTHON_VERSION=3.8.0rc1
 install:
   - docker pull dmoj/runtimes-tier1
 script:
   - export PYTHON_DIR="python$(echo "$PYTHON_VERSION" | cut -d. -f 1-2)"
-  - export PYTHON_URL="https://www.python.org/ftp/python/$PYTHON_VERSION/Python-$PYTHON_VERSION.tar.xz"
+  - export PYTHON_URL="https://www.python.org/ftp/python/$(perl -e 'shift=~/([\d.]+)/;print$1' "$PYTHON_VERSION")/Python-$PYTHON_VERSION.tar.xz"
   - docker run -e PYTHON_DIR="$PYTHON_DIR" -e PYTHON_URL="$PYTHON_URL" -v "$(pwd):/code" dmoj/runtimes-tier1
 deploy:
   provider: releases
