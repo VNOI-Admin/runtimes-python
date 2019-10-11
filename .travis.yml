@@ -1,29 +1,17 @@
-sudo: required
-addons:
-  apt:
-    packages:
-      - libssl-dev
-      - zlib1g-dev
-      - libreadline-dev
-      - liblzma-dev
-      - libncurses5-dev
-      - libbz2-dev
-      - libgdbm-dev
+branches:
+  except:
+    - /^untagged-.*/
+services:
+  - docker
 env:
   matrix:
     - PYTHON_VERSION=3.6.9
+install:
+  - docker pull dmoj/runtimes-tier1
 script:
-  - export PYTHON_SHORT="$(echo "$PYTHON_VERSION" | cut -d. -f 1-2)"
-  - export PYTHON_DIR="python$PYTHON_SHORT"
+  - export PYTHON_DIR="python$(echo "$PYTHON_VERSION" | cut -d. -f 1-2)"
   - export PYTHON_URL="https://www.python.org/ftp/python/$PYTHON_VERSION/Python-$PYTHON_VERSION.tar.xz"
-  - mkdir "$PYTHON_DIR"
-  - echo "Downloading $PYTHON_URL to $PYTHON_DIR..."
-  - curl -L "$PYTHON_URL" | tar -xJ -C "$PYTHON_DIR" --strip-components=1
-  - cd "$PYTHON_DIR"
-  - ./configure --prefix=/code/"$PYTHON_DIR" --enable-optimizations
-  - make -j"$(nproc)"
-  - sudo make install
-  - tar -C /code -czvf "$(pwd)/$PYTHON_DIR.tar.gz" "$PYTHON_DIR"
+  - docker run -e PYTHON_DIR="$PYTHON_DIR" -e PYTHON_URL="$PYTHON_URL" -v "$(pwd):/code" dmoj/runtimes-tier1
 deploy:
   provider: releases
   api_key:
