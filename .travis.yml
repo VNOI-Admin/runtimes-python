@@ -7,7 +7,7 @@ env:
   matrix:
     - PYTHON_VERSION=3.6.9
     - PYTHON_VERSION=3.7.4
-    - PYTHON_VERSION=3.8.0rc1
+    - PYTHON_VERSION=3.8.0
 install:
   - docker pull dmoj/runtimes-tier1
 script:
