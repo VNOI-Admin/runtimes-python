@@ -20,12 +20,12 @@ jobs:
         with:
           install: true
       - name: Download docker image
-        run: docker pull dmoj/runtimes-tier1:${{ matrix.arch }}-latest
+        run: docker pull vnoj/runtimes-tier1:${{ matrix.arch }}-latest
       - name: Build python
         run: |
           PYTHON_DIR="python$(echo "${{ matrix.python-version }}" | cut -d. -f 1-2)"
           PYTHON_URL="https://www.python.org/ftp/python/$(perl -e 'shift=~/([\d.]+)/;print$1' "${{ matrix.python-version }}")/Python-${{ matrix.python-version }}.tar.xz"
-          docker run -e ARCH="${{ matrix.arch }}" -e PYTHON_DIR="$PYTHON_DIR" -e PYTHON_URL="$PYTHON_URL" -v "$(pwd):/code" dmoj/runtimes-tier1:${{ matrix.arch }}-latest
+          docker run -e ARCH="${{ matrix.arch }}" -e PYTHON_DIR="$PYTHON_DIR" -e PYTHON_URL="$PYTHON_URL" -v "$(pwd):/code" vnoj/runtimes-tier1:${{ matrix.arch }}-latest
       - name: Archive build artifacts
         uses: actions/upload-artifact@v4
         with:
